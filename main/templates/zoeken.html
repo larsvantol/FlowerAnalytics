@@ -1,0 +1,108 @@
+{% extends 'base.html' %} {% block content %}
+<script>
+
+    function updateBuyers(buyers) {
+        var buyersElement = document.getElementById('buyers');
+        buyersElement.innerHTML = '';
+        buyers.forEach(function(buyer) {
+            var buyerElement = document.createElement('li');
+            buyerElement.className = 'flex justify-between gap-x-6 py-5 w-full';
+            buyerElement.innerHTML = `<a href="/Klanten?klant=` + buyer.pk + `" class="w-full"><div class="flex min-w-0 w-full gap-x-4 hover:bg-indigo-100">
+                                        <span class="material-symbols-outlined">store</span>
+                                        <div class="min-w-0 flex-auto">
+                                            <p class="text-sm font-semibold leading-6 text-gray-900">` + buyer.name + `</p>
+                                            <p class="mt-1 truncate text-xs leading-5 text-gray-500">` + buyer.buyer_id + `</p>
+                                        </div>
+                                        </div></a>`;
+            buyersElement.appendChild(buyerElement);
+        });
+    }
+
+        function updateProducts(products) {
+        var productsElement = document.getElementById('products');
+        productsElement.innerHTML = '';
+        products.forEach(function(product) {
+            var productElement = document.createElement('div');
+            productElement.className = 'flex justify-between gap-x-6 py-5 w-full';
+            productElement.innerHTML = `<a href="/Producten?product=` + product.pk + `" class="w-full"><div class="flex min-w-0 w-full gap-x-4 hover:bg-indigo-100">
+                                        <span class="material-symbols-outlined">deceased</span>
+                                        <div class="min-w-0 flex-auto">
+                                            <p class="text-sm font-semibold leading-6 text-gray-900">` + product.name + `</p>
+                                            <p class="mt-1 truncate text-xs leading-5 text-gray-500">` + product.code + `</p>
+                                        </div>
+                                        </div></a>`;
+            productsElement.appendChild(productElement);
+        });
+    }
+
+    function updateProductGroups(product_groups) {
+        var productGroupsElement = document.getElementById('product_groups');
+        productGroupsElement.innerHTML = '';
+        product_groups.forEach(function(product_group) {
+            var productElement = document.createElement('div');
+            productElement.className = 'flex justify-between gap-x-6 py-5 w-full';
+            productElement.innerHTML = `<a href="/Producten?product_group=` + product_group.pk + `" class="w-full"><div class="flex min-w-0 w-full gap-x-4 hover:bg-indigo-100">
+                                        <span class="material-symbols-outlined">filter_vintage</span>
+                                        <div class="min-w-0 flex-auto">
+                                            <p class="text-sm font-semibold leading-6 text-gray-900">` + product_group.name + `</p>
+                                            <p class="mt-1 truncate text-xs leading-5 text-gray-500">` + product_group.vbn_code + `</p>
+                                        </div>
+                                        </div></a>`;
+            productGroupsElement.appendChild(productElement);
+        });
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+        document.getElementById('search').addEventListener('keyup', function() {
+            var query = this.value;
+            var xhr = new XMLHttpRequest();
+            xhr.onreadystatechange = function() {
+                if (xhr.readyState === 4 && xhr.status === 200) {
+                    var response = JSON.parse(xhr.responseText);
+                    updateBuyers(response.buyers);
+                    updateProducts(response.products);
+                    updateProductGroups(response.product_groups);
+                }
+            };
+            xhr.open('GET', '/api/search/' + query, true);
+            xhr.send();
+        });
+    });
+</script>
+<div class="container w-full">
+    <div class="row w-full">
+        <div class="col-md-12 w-full">
+            <label for="search" class="mb-2 text-sm font-medium text-gray-900 sr-only dark:text-white">Search</label>
+            <div class="relative mb-4">
+                <div class="absolute inset-y-0 start-0 flex items-center ps-3 pointer-events-none">
+                    <svg class="w-4 h-4 text-gray-500 dark:text-gray-400" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 20">
+                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z"/>
+                    </svg>
+                </div>
+                <input type="search" id="search" class="block w-full p-4 ps-10 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Search" required />
+                <button type="submit" class="text-white absolute end-2.5 bottom-2.5 bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-4 py-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Search</button>
+            </div>
+            <div class="shadow-xl bg-slate-50 rounded-[20px] p-4 mb-4">
+                <div class="grid grid-cols-3">
+                    <div class="p-4">
+                        <h3 class="text-base font-bold leading-7 text-gray-900">Klanten</h3>
+                        <ul id="buyers" role="list" class="divide-y divide-gray-100">
+                        </ul>
+                    </div>
+                    <div class="p-4 border-l border-r">
+                        <h3 class="text-base font-bold leading-7 text-gray-900">Producten</h3>
+                        <ul id="products" role="list" class="divide-y divide-gray-100">
+                        </ul>
+                    </div>
+                    <div class="p-4">
+                        <h3 class="text-base font-bold leading-7 text-gray-900">Product groepen</h3>
+                        <ul id="product_groups" role="list" class="divide-y divide-gray-100">
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

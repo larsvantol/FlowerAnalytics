@@ -1,0 +1,110 @@
+[
+  {
+    "model": "main.productgroup",
+    "pk": 1,
+    "fields": {
+      "name": "Skimmia japonica 'Rubella' per",
+      "vbn_code": 15049,
+      "color": "BRUIN"
+    }
+  },
+  {
+    "model": "main.productgroup",
+    "pk": 2,
+    "fields": {
+      "name": "Chrysanthemum (Indicum Grp) tr",
+      "vbn_code": 1473,
+      "color": "GEMENGD"
+    }
+  },
+  {
+    "model": "main.productgroup",
+    "pk": 3,
+    "fields": {
+      "name": "Chrysanthemum (Indicum Grp) tr",
+      "vbn_code": 1510,
+      "color": "WIT"
+    }
+  },
+  {
+    "model": "main.productgroup",
+    "pk": 4,
+    "fields": {
+      "name": "Viburnum opulus per bos 'Roseu",
+      "vbn_code": 294,
+      "color": "NVT"
+    }
+  },
+  {
+    "model": "main.productgroup",
+    "pk": 5,
+    "fields": {
+      "name": "Helleborus Frostkiss Penny's P",
+      "vbn_code": 117226,
+      "color": "PAARS"
+    }
+  },
+  {
+    "model": "main.productgroup",
+    "pk": 6,
+    "fields": {
+      "name": "Campanula glomerata 'Superba'",
+      "vbn_code": 115425,
+      "color": "PAARS"
+    }
+  },
+  {
+    "model": "main.productgroup",
+    "pk": 7,
+    "fields": {
+      "name": "Viburnum opulus 'Roseum'",
+      "vbn_code": 295,
+      "color": "WIT"
+    }
+  },
+  {
+    "model": "main.productgroup",
+    "pk": 8,
+    "fields": {
+      "name": "Helleborus Frostkiss Anna's Re",
+      "vbn_code": 117225,
+      "color": "ROOD"
+    }
+  },
+  {
+    "model": "main.productgroup",
+    "pk": 9,
+    "fields": {
+      "name": "Chrysanthemum (Indicum Grp) tr",
+      "vbn_code": 1505,
+      "color": "GEEL"
+    }
+  },
+  {
+    "model": "main.productgroup",
+    "pk": 10,
+    "fields": {
+      "name": "Alchemilla mollis 'Robustica'",
+      "vbn_code": 13537,
+      "color": "GROEN"
+    }
+  },
+  {
+    "model": "main.productgroup",
+    "pk": 11,
+    "fields": {
+      "name": "Chrysanthemum (Indicum Grp) tr",
+      "vbn_code": 1509,
+      "color": "ROZE"
+    }
+  },
+  {
+    "model": "main.productgroup",
+    "pk": 12,
+    "fields": {
+      "name": "Helleborus Frostkiss Molly's W",
+      "vbn_code": 117224,
+      "color": "GROEN"
+    }
+  }
+]

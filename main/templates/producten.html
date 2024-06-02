@@ -1,0 +1,320 @@
+{% extends 'base.html' %} {% block content %}
+<script>
+    function product_group_change() {
+        var products = {{products|safe}};
+        var selected_product_group = document.getElementById("product_groups").value;
+        var products_select = document.getElementById("products");
+
+        if (selected_product_group == -1) {
+            products_select.innerHTML = "<option selected value=\"-1\">-</option>";
+            for (product_group in products) {
+                for (product in products[product_group]) {
+                  products_select.innerHTML += "<option value=" + products[product_group][product].pk + ">" + products[product_group][product].name + "</option>";
+                }
+            }
+            return;
+        }
+        else {
+            possible_products = products[selected_product_group];
+            products_select.innerHTML = "<option selected value=\"-1\">-</option>";
+            for (product in possible_products) {
+                products_select.innerHTML += "<option value=" + possible_products[product].pk + ">" + possible_products[product].name + "</option>";
+            }
+        }
+    }
+
+  window.onload = function() {
+    product_group_change();
+  }
+
+</script>
+<div class="flex flex-row h-full gap-8">
+  <div class="shadow-xl basis-1/4 h-full bg-indigo-100 rounded-[20px] p-4 print:hidden">
+    <h3 class="font-bold pb-4">Producten</h3>
+    <form class="max-w-sm mx-auto border-t border-gray-300 py-4" method="get" action="/Producten">
+      <label for="product_groups" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Product groepen</label>
+      <select onchange="product_group_change()" name="product_group" id="product_groups" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+        <option value="-1">-</option>
+        {% for product_group in product_groups %}
+          <option {% if product_group.selected == "1" %}selected{% endif %} value="{{ product_group.pk }}">{{ product_group.name }}</option>
+        {% endfor %}
+      </select>
+      <label for="products" class="mt-4 block mb-2 text-sm font-medium text-gray-900 dark:text-white">Producten</label>
+      <select  name="product" id="products" class="mb-4 bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+        <option value="-1">-</option>
+        {% for key, product_in_group in products.items %}
+          {% for product in product_in_group %}
+            <option {% if product.selected == "1" %}selected{% endif %} value="{{ product.pk }}">{{ product.name }}</option>
+          {% endfor %}
+        {% endfor %}
+      </select>
+      <button class="w-full pointer-events-auto rounded-md bg-indigo-600 px-3 py-2 text-[0.8125rem] font-semibold leading-5 text-white hover:bg-indigo-500">Selecteer</button>
+    </form>
+  </div>
+  <div class="basis-3/4 h-full">
+    {% if not selected_product and not selected_product_group %}
+    <div class="shadow-xl bg-slate-50 rounded-[20px] p-4 mb-8">
+      <p class="mt-1 max-w-2xl text-sm leading-6 text-gray-500"><i>Selecteer een product groep of product voor meer informatie</i></p>
+    </div>
+    {% endif %}
+    {% if selected_product %}
+      <div class="shadow-xl bg-slate-50 rounded-[20px] p-4 mb-4">
+        <div class="px-4">
+          <h3 class="text-base font-bold leading-7 text-gray-900">{{ selected_product.name }}</h3>
+          <p class="mt-1 max-w-2xl text-sm leading-6 text-gray-500">Product informatie en verkoop</p>
+        </div>
+        <div class="mt-6 border-t border-gray-300">
+          <dl class="divide-y divide-gray-300">
+            <div class="px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
+              <dt class="text-sm font-medium leading-6 text-gray-900">Code</dt>
+              <dd class="mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0">{{ selected_product.code }}</dd>
+            </div>
+            <div class="px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
+              <dt class="text-sm font-medium leading-6 text-gray-900">Product groep</dt>
+              <dd class="mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0">
+                <dl class="divide-y divide-gray-300">
+                  <div class="">
+                    <dt class="text-sm font-medium leading-6 text-gray-900">Naam</dt>
+                    <dd class="mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0"><a class="hover:underline" href="/Producten?product_group={{ selected_product.group.pk}}&product=-1">{{ selected_product.group.name }}</a></dd>
+                  </div>
+                  <div class="">
+                    <dt class="text-sm font-medium leading-6 text-gray-900">VBN Code</dt>
+                    <dd class="mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0">{{ selected_product.group.vbn_code }}</dd>
+                  </div>
+                  <div class="">
+                    <dt class="text-sm font-medium leading-6 text-gray-900">Kleur</dt>
+                    <dd class="mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0">{{ selected_product.group.color }}</dd>
+                  </div>
+                </dl>
+              </dd>
+            </div>
+            <div class="px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
+              <dt class="text-sm font-medium leading-6 text-gray-900">Lengte</dt>
+              <dd class="mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0">{{ selected_product.length }} cm</dd>
+            </div>
+            <div class="px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
+              <dt class="text-sm font-medium leading-6 text-gray-900">Koppen</dt>
+              <dd class="mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0">{{ selected_product.heads }}</dd>
+            </div>
+          </dl>
+        </div>
+      </div>
+    {% endif %}
+    {% if not selected_product and selected_product_group %}
+      <div class="shadow-xl bg-slate-50 rounded-[20px] p-4 mb-4">
+        <div class="px-4">
+          <h3 class="text-base font-bold leading-7 text-gray-900">{{ selected_product_group.name }}</h3>
+          <p class="mt-1 max-w-2xl text-sm leading-6 text-gray-500">Product informatie en verkoop</p>
+        </div>
+        <div class="mt-6 border-t border-gray-300">
+          <dl class="divide-y divide-gray-300">
+            <div class="px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
+              <dt class="text-sm font-medium leading-6 text-gray-900">Naam</dt>
+                    <dd class="mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0">{{ selected_product_group.name }}</dd>
+            </div>
+            <div class="px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
+              <dt class="text-sm font-medium leading-6 text-gray-900">VBN Code</dt>
+                    <dd class="mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0">{{ selected_product_group.vbn_code }}</dd>
+            </div>
+            <div class="px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
+              <dt class="text-sm font-medium leading-6 text-gray-900">Kleur</dt>
+              <dd class="mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0">{{ selected_product_group.color }}</dd>
+            </div>
+            <div class="px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
+              <dt class="text-sm font-medium leading-6 text-gray-900">Gekoppelde producten</dt>
+              <dd class="mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0">
+                <ul class="list-disc pl-4">
+                  <table>
+                    <thead>
+                      <tr>
+                        <th class="px-4 py-2">Naam</th>
+                        <th class="px-4 py-2">Code</th>
+                        <th class="px-4 py-2">Lengte</th>
+                        <th class="px-4 py-2">Koppen</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {% for product in selected_product_group.product_set.all %}
+                        <tr>
+                          <td class="px-4 py-2"><a class="hover:underline" href="/Producten?product_group={{selected_product_group.pk}}&product={{product.pk}}">{{ product.name }}</a></td>
+                          <td class="px-4 py-2">{{ product.code }}</td>
+                          <td class="px-4 py-2">{{ product.length }}</td>
+                          <td class="px-4 py-2">{{ product.heads }}</td>
+                        </tr>
+                      {% endfor %}
+                    </tbody>
+                  </table>
+                </ul>
+              </dd>
+            </div>
+          </dl>
+        </div>
+      </div>
+    {% endif %}
+    {% if not selected_product_group and not selected_product %}
+      <div class="shadow-xl bg-slate-50 rounded-[20px] px-8 py-4 mt-8">
+        <h3 class="text-base font-bold leading-7 text-gray-900">Verkoopdata</h3>
+        <p class="mt-1 max-w-2xl text-sm leading-6 text-gray-500">Historische verkoopdata {% if selected_klant %}van {{selected_klant.name}}{% endif %}</p>
+        <div class="mt-6 border-t border-gray-300">
+          <canvas id="bar_chart_productgroep_omzet"></canvas>
+        </div>
+        <div class="mt-6 border-t border-gray-300">
+          <canvas id="bar_chart_productgroep_aantallen"></canvas>
+        </div>
+      </div>
+      <div class="shadow-xl bg-slate-50 rounded-[20px] px-8 py-4 mt-8">
+        <h3 class="text-base font-bold leading-7 text-gray-900">Omzet</h3>
+        <p class="mt-1 max-w-2xl text-sm leading-6 text-gray-500">Historische verkoopdata {% if selected_klant %}van {{selected_klant.name}}{% endif %}</p>
+        <div class="mt-6 border-t border-gray-300">
+          <canvas id="turnover_chart_per_week"></canvas>
+        </div>
+      </div>
+    {% endif %}
+    {% if selected_product_group and not selected_product %}
+      <div class="shadow-xl bg-slate-50 rounded-[20px] px-8 py-4 mt-8">
+        <h3 class="text-base font-bold leading-7 text-gray-900">Verkoopdata</h3>
+        <p class="mt-1 max-w-2xl text-sm leading-6 text-gray-500">Historische verkoopdata {% if selected_klant %}van {{selected_klant.name}}{% endif %}</p>
+        <div class="mt-6 border-t border-gray-300">
+          <canvas id="bar_chart_producten_omzet"></canvas>
+        </div>
+        <div class="mt-6 border-t border-gray-300">
+          <canvas id="bar_chart_producten_aantallen"></canvas>
+        </div>
+      </div>
+    {% endif %}
+    {% if selected_product %}
+      <div class="shadow-xl bg-slate-50 rounded-[20px] px-8 py-4 mt-8">
+        <h3 class="text-base font-bold leading-7 text-gray-900">Verkoopdata</h3>
+        <p class="mt-1 max-w-2xl text-sm leading-6 text-gray-500">Historische verkoopdata {% if selected_klant %}van {{selected_klant.name}}{% endif %}</p>
+        <div class="mt-6 border-t border-gray-300">
+          <canvas id="example_scatter_chart"></canvas>
+        </div>
+        <h3 class="mt-6 text-base font-bold leading-7 text-gray-900">Prijs statistiek</h3>
+        <div class="mt-6 border-t border-gray-300">
+          <div class="mt-6 grid grid-cols-3 gap-4">
+            <div class="drop-shadow bg-slate-100 p-4 rounded-[20px]">
+              <h3 class="text-base font-bold leading-7 text-gray-900">Gemiddelde prijs</h3>
+              <div class="mt-1 max-w-2xl text-lg leading-6 text-gray-700 columns-2"><p class="">€ </p><p class="italic" id="prices_stat_avg">-</p></div>
+            </div>
+            <div class="drop-shadow bg-slate-100 p-4 rounded-[20px]">
+              <h3 class="text-base font-bold leading-7 text-gray-900">Standaarddeviatie</h3>
+              <div class="mt-1 max-w-2xl text-lg leading-6 text-gray-700 columns-2"><p class="">± € </p><p class="italic" id="prices_stat_std">-</p></div>
+            </div>
+            <div class="drop-shadow bg-slate-100 p-4 rounded-[20px]">
+              <h3 class="text-base font-bold leading-7 text-gray-900">Mediaan</h3>
+              <div class="mt-1 max-w-2xl text-lg leading-6 text-gray-700 columns-2"><p class="">€ </p><p class="italic" id="prices_stat_med">-</p></div>
+            </div>
+            <div class="drop-shadow bg-slate-100 p-4 rounded-[20px]">
+              <h3 class="text-base font-bold leading-7 text-gray-900">Minimum prijs</h3>
+              <div class="mt-1 max-w-2xl text-lg leading-6 text-gray-700 columns-2"><p class="">€ </p><p class="italic" id="prices_stat_min">-</p></div>
+            </div>
+            <div class="drop-shadow bg-slate-100 p-4 rounded-[20px]">
+              <h3 class="text-base font-bold leading-7 text-gray-900">Maximum prijs</h3>
+              <div class="mt-1 max-w-2xl text-lg leading-6 text-gray-700 columns-2"><p class="">€ </p><p class="italic" id="prices_stat_max">-</p></div>
+            </div>
+            <div class="drop-shadow bg-slate-100 p-4 rounded-[20px]">
+              <h3 class="text-base font-bold leading-7 text-gray-900">50% van prijzen binnen</h3>
+              <div class="mt-1 max-w-2xl text-lg leading-6 text-gray-700 columns-2"><p class=""># </p><p class="italic" id="prices_stat_50">-</p></div>
+            </div>
+            <div class="drop-shadow bg-slate-100 p-4 rounded-[20px]">
+              <h3 class="text-base font-bold leading-7 text-gray-900">Aantallen verkocht</h3>
+              <div class="mt-1 max-w-2xl text-lg leading-6 text-gray-700 columns-2"><p class=""># </p><p class="italic" id="prices_stat_amount">-</p></div>
+            </div>
+            <div class="drop-shadow bg-slate-100 p-4 rounded-[20px]">
+              <h3 class="text-base font-bold leading-7 text-gray-900">Totale omzet</h3>
+              <div class="mt-1 max-w-2xl text-lg leading-6 text-gray-700 columns-2"><p class="">€ </p><p class="italic" id="prices_stat_total">-</p></div>
+            </div>
+          </div>
+          <div class="mt-6 border-t border-gray-300">
+            <canvas id="example_histogram_chart"></canvas>
+          </div>
+        </div>
+      </div>
+    {% endif %}
+    {% if selected_product or selected_product_group %}
+      <div class="shadow-xl bg-slate-50 rounded-[20px] p-4 mt-8">
+        <h3 class="text-base font-bold leading-7 text-gray-900">Orders</h3>
+        <p class="mt-1 max-w-2xl text-sm leading-6 text-gray-500">Laatste 10 order {% if selected_product %}van {{selected_product.name}}{% elif selected_product_group %}{{selected_product_group.name}}{% endif %}</p>
+        <div class="mt-6 border-t border-gray-300">
+          <dl class="divide-y divide-gray-300">
+            <div class="px-4 py-6">
+              <table class="w-full">
+                <thead>
+                  <tr>
+                    <th class="px-4 py-2">Datum</th>
+                    <th class="px-4 py-2">Product</th>
+                    <th class="px-4 py-2">Klant</th>
+                    <th class="px-4 py-2">Aantal</th>
+                    <th class="px-4 py-2">Prijs per stuk</th>
+                    <th class="px-4 py-2">Prijs</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {% for order in orders %}
+                    <tr>
+                      <td class="px-4 py-2">{{ order.date|date:"d-m-y H:i" }}</td>
+                      <td class="px-4 py-2"><a class="hover:underline" href="/Producten?product={{ order.product.pk }}">{{ order.product.name }}</a></td>
+                      <td class="px-4 py-2"><a class="hover:underline" href="/Klanten?klant={{ order.buyer.pk }}">{{ order.buyer.name }}</a></td>
+                      <td class="px-4 py-2">{{ order.amount }}</td>
+                      <td class="px-4 py-2">€ {{ order.price_per_piece }}</td>
+                      <td class="px-4 py-2">€ {{ order.price }}</td>
+                    </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+            </div>
+          </dl>
+        </div>
+      </div>
+    {% endif %}
+  </div>
+</div>
+
+{% load static %}
+<script src="{% static 'js/pie_chart_producten.js' %}"></script>
+<script src="{% static 'js/scatter_chart.js' %}"></script>
+<script src="{% static 'js/turnover_chart.js' %}"></script>
+<script src="{% static 'js/histogram_chart.js' %}"></script>
+<script src="{% static 'js/bar_chart_turnover.js' %}"></script>
+{% if not selected_product_group and not selected_product %}
+<script>
+  bar_chart_productgroep_aantallen = create_bar_chart_producten("bar_chart_productgroep_aantallen", "top", 2);
+  bar_chart_productgroep_omzet = create_bar_chart_producten("bar_chart_productgroep_omzet", "top", 2);
+  turnover_chart_per_week = create_line_chart("turnover_chart_per_week", "top", 2);
+  update_bar_chart_producten("/api/amount_products_sold_per_product_group", bar_chart_productgroep_aantallen, "Aantallen per productgroep", "stuks");
+  update_bar_chart_producten("/api/price_products_sold_per_product_group", bar_chart_productgroep_omzet, "Omzet per productgroep", "€");
+  update_line_chart("/api/turnover_per_week", turnover_chart_per_week, "Omzet per week", "€");
+</script>
+{% elif selected_product_group and not selected_product %}
+<script>
+  bar_chart_producten_aantallen = create_bar_chart_producten("bar_chart_producten_aantallen", "top", 2);
+  bar_chart_producten_omzet = create_bar_chart_producten("bar_chart_producten_omzet", "top", 2);
+  update_bar_chart_producten("/api/amount_sold_per_product/{{selected_product_group.pk}}", bar_chart_producten_aantallen, "Aantallen per product", "stuks");
+  update_bar_chart_producten("/api/price_per_product/{{selected_product_group.pk}}", bar_chart_producten_omzet, "Omzet per product", "€");
+</script>
+{% endif %}
+{% if selected_product %}
+<script>
+  example_scatter_chart = create_scatter_chart("example_scatter_chart", "top", 2);
+  example_histogram_chart = create_histogram_chart("example_histogram_chart", "top", 2);
+  update_scatter_chart("/api/price_over_time_per_product/{{selected_product.pk}}", example_scatter_chart, "Prijs per order", "€");
+  update_histogram_chart("/api/histogram_of_product_prices/{{selected_product.pk}}", example_histogram_chart, "Histogram van de prijzen", "");
+
+  async function update_price_stats() {
+    const response = await fetch("/api/price_per_product_stats/{{selected_product.pk}}");
+    const data = await response.json();
+    document.getElementById("prices_stat_avg").innerHTML = parseFloat(data.result.average).toFixed(4);
+    document.getElementById("prices_stat_std").innerHTML = parseFloat(data.result.std).toFixed(4);
+    document.getElementById("prices_stat_med").innerHTML = parseFloat(data.result.median).toFixed(2);
+    document.getElementById("prices_stat_min").innerHTML = parseFloat(data.result.minimum).toFixed(2);
+    document.getElementById("prices_stat_max").innerHTML = parseFloat(data.result.maximum).toFixed(2);
+    document.getElementById("prices_stat_50").innerHTML = parseFloat(data.result.quarter_1).toFixed(2) + " - " + parseFloat(data.result.quarter_3).toFixed(2);
+    document.getElementById("prices_stat_amount").innerHTML = parseFloat(data.result.amount).toFixed(0);
+    document.getElementById("prices_stat_total").innerHTML = parseFloat(data.result.total).toFixed(2);
+    console.log(data.result);
+  }
+
+  update_price_stats();
+</script>
+{% endif %}
+{% endblock %}

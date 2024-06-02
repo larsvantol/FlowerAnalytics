@@ -1,0 +1,82 @@
+{% extends 'base.html' %} {% block content %}
+<div class="flex flex-row h-full gap-8">
+  <div class="shadow-xl basis-1/4 h-full bg-indigo-100 rounded-[20px] p-4">
+    <h3 class="font-bold pb-4">Klanten</h3>
+    <form class="max-w-sm mx-auto border-t border-gray-300 py-4" method="get" action="/Klanten">
+      <label for="klant" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Klanten</label>
+      <select name="klant" id="klant" class="mb-4 bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+        <option value="-1">-</option>
+        {% for klant in klanten %}
+          <option {% if klant.selected == "1" %}selected{% endif %} value="{{ klant.pk }}">{{ klant.name }}</option>
+        {% endfor %}
+      </select>
+      <button class="w-full pointer-events-auto rounded-md bg-indigo-600 px-3 py-2 text-[0.8125rem] font-semibold leading-5 text-white hover:bg-indigo-500">Selecteer</button>
+      </form>
+  </div>
+  <div class="basis-3/4 h-full">
+    <div class="shadow-xl bg-slate-50 rounded-[20px] p-4">
+      <div class="px-4">
+        <h3 class="text-base font-bold leading-7 text-gray-900">{{ selected_klant.name }}</h3>
+        <p class="mt-1 max-w-2xl text-sm leading-6 text-gray-500">Product informatie en verkoop</p>
+      </div>
+      <div class="mt-6 border-t border-gray-300">
+        <dl class="px-4 divide-y divide-gray-300">
+          <div class="px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
+            <dt class="text-sm font-medium leading-6 text-gray-900">Naam</dt>
+            <dd class="mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0">{{ selected_klant.name }}</dd>
+          </div>
+        </dl>
+      </div>
+    </div>
+    <div class="shadow-xl bg-slate-50 rounded-[20px] px-8 py-4 mt-8">
+      <h3 class="text-base font-bold leading-7 text-gray-900">Orders</h3>
+      <p class="mt-1 max-w-2xl text-sm leading-6 text-gray-500">Laatste 10 order {% if selected_klant %}van {{selected_klant.name}}{% endif %}</p>
+      <div class="mt-6 border-t border-gray-300">
+        <dl class="divide-y divide-gray-300">
+          <div class="px-4 py-6">
+            <table class="w-full">
+              <thead>
+                <tr>
+                  <th class="px-4 py-2">Datum</th>
+                  <th class="px-4 py-2">Product</th>
+                  <th class="px-4 py-2">Klant</th>
+                  <th class="px-4 py-2">Aantal</th>
+                  <th class="px-4 py-2">Prijs per stuk</th>
+                  <th class="px-4 py-2">Prijs</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for order in orders %}
+                  <tr>
+                    <td class="px-4 py-2">{{ order.date|date:"d-m-y H:i" }}</td>
+                    <td class="px-4 py-2"><a class="hover:underline" href="/Producten?product={{ order.product.pk }}">{{ order.product.name }}</a></td>
+                    <td class="px-4 py-2"><a class="hover:underline" href="/Klanten?klant={{ order.buyer.pk }}">{{ order.buyer.name }}</a></td>
+                    <td class="px-4 py-2">{{ order.amount }}</td>
+                    <td class="px-4 py-2">€ {{ order.price_per_piece }}</td>
+                    <td class="px-4 py-2">€ {{ order.price }}</td>
+                  </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        </dl>
+      </div>
+    </div>
+    <div class="shadow-xl bg-slate-50 rounded-[20px] px-8 py-4 mt-8">
+      <h3 class="text-base font-bold leading-7 text-gray-900">Verkoopdata</h3>
+      <p class="mt-1 max-w-2xl text-sm leading-6 text-gray-500">Historische verkoopdata {% if selected_klant %}van {{selected_klant.name}}{% endif %}</p>
+      <div class="mt-6 border-t border-gray-300">
+        <div class="flex flex-row w-full">
+          <div class="basis-1/2"><canvas id="pie_chart_producten"></canvas></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% load static %}
+<script src="{% static 'js/pie_chart_producten.js' %}"></script>
+<script>
+  pie_chart = create_pie_chart_producten("pie_chart_producten", "top", 2);
+  update_pie_chart_producten("/api/amount_products_per_product_group_per_buyer/{{ selected_klant.pk }}", pie_chart, "Afname per productgroep", "stuks");
+</script>
+{% endblock %}
