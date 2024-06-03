@@ -1,0 +1,38 @@
+services:
+  web:
+    build:
+      context: ./app
+      dockerfile: dockerfile
+    command: gunicorn finance_backend.wsgi:application --bind 0.0.0.0:8000 --access-logfile - --error-logfile -
+    volumes:
+      - static_volume:/home/app/web/staticfiles
+    expose:
+      - 8000
+    env_file:
+      - ./.env
+    depends_on:
+      - db
+    restart: always
+  db:
+    image: postgres:15
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+    env_file:
+      - ./.env
+    command: -p 5431
+    restart: always
+  nginx:
+    build:
+      context: ./nginx
+      dockerfile: dockerfile
+    volumes:
+      - static_volume:/home/app/web/staticfiles
+    ports:
+      - 8001:80
+    depends_on:
+      - web
+    restart: always
+
+volumes:
+  postgres_data:
+  static_volume:
